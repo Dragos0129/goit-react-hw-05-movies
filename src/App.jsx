@@ -1,37 +1,26 @@
-import { Route, Switch } from 'react-router-dom';
-import Navigation from './components/Navigation/Navigation';
-import { lazy, Suspense } from 'react';
-import Container from './components/Container/Container';
-import Loader from 'components/Loader/Loader';
+import { Route, Routes } from 'react-router-dom';
+import { lazy } from 'react';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
-const MoviesPage = lazy(() => import('./pages/MoviesPage'));
-const MovieDetailsPage = lazy(() =>
-  import('./pages/MovieDetailsPage/MovieDetailsPage')
-);
-const NotFoundView = lazy(() => import('./pages/NotFoundView'));
+const SharedLayout = lazy(() => import('page/SharedLayout'));
+const HomePage = lazy(() => import('page/HomePage'));
+const MoviePage = lazy(() => import('page/MoviePage'));
+const MovieDetails = lazy(() => import('page/MovieDetails'));
+const Cast = lazy(() => import('components/Cast'));
+const Reviews = lazy(() => import('components/Reviews'));
+const NotFound = lazy(() => import('page/NotFoundPage'));
 
-export default function App() {
+export const App = () => {
   return (
-    <Container>
-      <Navigation />
-      <Suspense fallback={<Loader />}>
-        <Switch>
-          <Route exact path="/">
-            <HomePage />
-          </Route>
-          <Route exact path="/movies">
-            <MoviesPage />
-          </Route>
-          <Route path="/movies/:movieId">
-            <MovieDetailsPage />
-          </Route>
-
-          <Route>
-            <NotFoundView path="*" />
-          </Route>
-        </Switch>
-      </Suspense>
-    </Container>
+    <Routes>
+      <Route path="/" element={<SharedLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="movies" element={<MoviePage />} />
+        <Route path="movies/:movieId/*" element={<MovieDetails />}>
+          <Route path="cast" element={<Cast />} />
+          <Route path="reviews" element={<Reviews />} />
+        </Route>
+        <Route path="" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
-}
+};
